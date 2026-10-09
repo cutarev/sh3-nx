@@ -18,8 +18,9 @@ for the Switch's ARM64 CPU. The Windows layer the game expects (Direct3D 8, Dire
 is reimplemented on top of SDL2 and OpenGL.
 
 > [!NOTE]
-> No game files are included. You need your own copy of the PC game; the NRO from the release, or one you build
-> yourself ([Building the NRO](#building-the-nro)), runs it.
+> No game files are included. You need your own copy of the PC game; the NRO from
+> [Releases](https://github.com/cutarev/sh3-nx/releases), or one you build yourself
+> ([Building the NRO](#building-the-nro)), runs it.
 
 ## Features
 
@@ -57,7 +58,7 @@ Known issues:
 
    ```text
    /switch/sh3-nx/
-     sh3-nx.nro       (from the release)
+     sh3-nx.nro       (from Releases)
      sh3.exe          (from your PC install)
      data/            (from your PC install, about 5 GB)
      savedata/        (an empty folder: saves and settings go here)
