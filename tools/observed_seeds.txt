@@ -1,0 +1,5 @@
+# Function entries the running game reached that the disassembler had missed: each from a
+# "indirect call to untranslated address" fatal. tools/seeds.py marks them observed, which lets them
+# split a function the sweep decoded through a data table.
+0x00665097
+0x004E9400

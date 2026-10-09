@@ -1,0 +1,4 @@
+capstone>=5      # the recompiler's disassembler (tools/regen.sh)
+unicorn>=2       # differential testing only (tools/fuzz.py, tools/oracle.py)
+pillow           # tools/ppm2png.py, debugging screenshots
+pytest           # third_party/xboxrecomp test suites
