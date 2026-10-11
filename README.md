@@ -8,6 +8,8 @@
 </div>
 <h1 align=center>Silent Hill 3 — Nintendo Switch port</h1>
 
+<p align=center><a href="https://discord.gg/H9yb3hSkvf"><img src="https://img.shields.io/badge/Discord-Join%20the%20server-5865F2?logo=discord&logoColor=white" alt="Discord"></a></p>
+
 <p align=center><b>v0.01</b></p>
 
 A native Nintendo Switch port of the PC version of **Silent Hill 3**, made the same way as
