@@ -10,7 +10,7 @@
 
 <p align=center><a href="https://discord.gg/H9yb3hSkvf"><img src="https://img.shields.io/badge/Discord-Join%20the%20server-5865F2?logo=discord&logoColor=white" alt="Discord"></a></p>
 
-<p align=center><b>v0.01</b></p>
+<p align=center><b>v0.02</b></p>
 
 A native Nintendo Switch port of the PC version of **Silent Hill 3**, made the same way as
 [sh2-nx](https://github.com/cutarev/sh2-nx).
@@ -33,6 +33,13 @@ is reimplemented on top of SDL2 and OpenGL.
 - **Controller**: Nintendo's layout (A confirms, B cancels), remappable in Options > Button Config.
 - **Shader cache**: shaders are compiled once and kept on the SD card, so areas only stutter the first time.
 - Also builds for Linux (x86-64), which is where most of the debugging happens.
+
+## v0.02
+
+- Heather's hair in the real-time cutscenes was drawn as solid blocks
+  ([#1](https://github.com/cutarev/sh3-nx/issues/1)): the alpha of the game's paletted (P8) textures was dropped
+  when they were expanded for OpenGL. The palette's alpha is now honored, and palettes are handled as Direct3D 8
+  does (numbers up to 65535, a texture expanded again when its palette changes).
 
 ## v0.01
 

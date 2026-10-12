@@ -63,7 +63,7 @@ METHOD(d3d_CheckDeviceFormat, 7) {
     case FMT_A8R8G8B8: case FMT_X8R8G8B8: case FMT_R5G6B5: case FMT_X1R5G5B5: case FMT_A1R5G5B5:
     case FMT_A4R4G4B4: case FMT_A8: case FMT_L8: case FMT_A8L8: case FMT_DXT1: case FMT_DXT2:
     case FMT_DXT3: case FMT_DXT4: case FMT_DXT5: case FMT_D16: case FMT_D24S8: case FMT_D24X8:
-    case FMT_D32: case FMT_D16_LOCKABLE:
+    case FMT_D32: case FMT_D16_LOCKABLE: case FMT_P8:
         return 0;
     }
     return D3DERR_NOTAVAILABLE;
@@ -88,7 +88,8 @@ static void fill_caps(uint32_t c) {
     /* TextureCaps. No D3DPTEXTURECAPS_POW2 (0x2): GL takes any size, and with it the game rounds a
      * texture up to a power of two (the Enhanced Edition's 2732x2048 title became 4096x2048 with the
      * art misplaced). The modern GPUs EE runs on report no POW2 either. */
-    v[15] = 0x1 | 0x4 | 0x8 | 0x40 | 0x400 | 0x800 | 0x4000 | 0x8000 | 0x10000;
+    /* D3DPTEXTURECAPS_ALPHAPALETTE (0x80): a P8 palette's flags byte is the alpha (d3d8_res.c). */
+    v[15] = 0x1 | 0x4 | 0x8 | 0x40 | 0x80 | 0x400 | 0x800 | 0x4000 | 0x8000 | 0x10000;
     v[16] = v[17] = v[18] = 0x0100 | 0x0200 | 0x0400 | 0x010000 | 0x020000 | 0x01000000 | 0x02000000;
     v[19] = v[20] = 0x1F;         /* TextureAddressCaps */
     v[21] = 0x1F;
@@ -586,9 +587,25 @@ METHOD(dev_SetTextureStageState, 4) {
     return 0;
 }
 METHOD(dev_ValidateDevice, 2) { MEM32(ARG(1)) = 1; return 0; }
-METHOD(dev_SetPaletteEntries, 3) { if (ARG(1) < 256) memcpy(dev->palette[ARG(1)], GPTR(ARG(2)), 1024); return 0; }
-METHOD(dev_GetPaletteEntries, 3) { if (ARG(1) < 256) memcpy(GPTR(ARG(2)), dev->palette[ARG(1)], 1024); return 0; }
-METHOD(dev_SetCurrentTexturePalette, 2) { dev->cur_palette = ARG(1) & 255; return 0; }
+/* Palette numbers go up to 65535 in D3D8. The entries are device data, not state: they are kept on the
+ * real device while a state block records. */
+METHOD(dev_SetPaletteEntries, 3) {
+    uint32_t n = ARG(1);
+    Dev *d = rec_real ? rec_real : dev;
+    if (n >= 65536) return D3DERR_INVALIDCALL;
+    if (!d->palette[n]) d->palette[n] = malloc(1024);
+    memcpy(d->palette[n], GPTR(ARG(2)), 1024);
+    d->pal_version[n]++;
+    return 0;
+}
+METHOD(dev_GetPaletteEntries, 3) {
+    uint32_t n = ARG(1);
+    if (n >= 65536) return D3DERR_INVALIDCALL;
+    if (dev->palette[n]) memcpy(GPTR(ARG(2)), dev->palette[n], 1024);
+    else memset(GPTR(ARG(2)), 0, 1024);
+    return 0;
+}
+METHOD(dev_SetCurrentTexturePalette, 2) { if (ARG(1) >= 65536) return D3DERR_INVALIDCALL; dev->cur_palette = ARG(1); return 0; }
 METHOD(dev_GetCurrentTexturePalette, 2) { MEM32(ARG(1)) = dev->cur_palette; return 0; }
 
 /* ---- drawing ---- */
