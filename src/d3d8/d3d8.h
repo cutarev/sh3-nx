@@ -31,6 +31,7 @@ typedef struct Res {
     int dirty;
     GLuint buf;                  /* vertex and index buffers */
     int is_depth, is_rt;
+    uint32_t pal_idx, pal_ver;   /* P8 textures: the palette their GL copy was expanded with */
 } Res;
 
 Res *res_of(uint32_t obj);       /* NULL for a NULL object */
@@ -63,7 +64,8 @@ typedef struct Dev {
     uint32_t backbuffer, autodepth;
     uint32_t bb_w, bb_h;
     GLuint fbo, vao, stream_buf, index_buf;
-    uint32_t palette[256][256];
+    uint32_t *palette[65536];    /* PALETTEENTRY[256] per palette number, allocated by SetPaletteEntries */
+    uint32_t pal_version[65536]; /* bumped by SetPaletteEntries: a P8 texture expanded with an older one is redone */
     uint32_t cur_palette;
 } Dev;
 

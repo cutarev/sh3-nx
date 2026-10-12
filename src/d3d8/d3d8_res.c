@@ -198,10 +198,19 @@ static void upload_level(Res *t, Res *s) {
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
     if (f->block) glCompressedTexSubImage2D(target, s->level, 0, 0, s->w, s->h, f->ifmt, s->size, GPTR(s->mem));
     else if (s->fmt == FMT_P8) {
+        /* The indices through the current palette. PALETTEENTRY is R,G,B,flags in memory, and flags
+         * is the alpha (D3DPTEXTURECAPS_ALPHAPALETTE, as on the GeForce-class cards the game was made
+         * for); it used to be forced opaque, which turns any alpha-masked P8 texture into solid blocks
+         * (issue #1, Heather's hair in the real-time cutscenes). A palette with no alpha set at all is
+         * opaque, not invisible. */
         uint32_t *rgba = malloc(4u * s->w * s->h);
         const uint8_t *src = GPTR(s->mem);
-        const uint32_t *pal = dev->palette[dev->cur_palette];  /* PALETTEENTRY is R,G,B,flags in memory */
-        for (uint32_t i = 0; i < s->w * s->h; i++) rgba[i] = pal[src[i]] | 0xFF000000u;
+        static const uint32_t none[256];
+        const uint32_t *pal = dev->palette[dev->cur_palette] ? dev->palette[dev->cur_palette] : none;
+        uint32_t has_alpha = 0;
+        for (int i = 0; i < 256; i++) has_alpha |= pal[i] & 0xFF000000u;
+        uint32_t opaque = has_alpha ? 0 : 0xFF000000u;
+        for (uint32_t i = 0; i < s->w * s->h; i++) rgba[i] = pal[src[i]] | opaque;
         glTexSubImage2D(target, s->level, 0, 0, s->w, s->h, GL_RGBA, GL_UNSIGNED_BYTE, rgba);
         free(rgba);
     } else glTexSubImage2D(target, s->level, 0, 0, s->w, s->h, f->gfmt, f->type, GPTR(s->mem));
@@ -210,6 +219,18 @@ static void upload_level(Res *t, Res *s) {
 
 void res_upload_dirty(Res *t) {
     gl_ensure(t);
+    if (t->fmt == FMT_P8) {
+        /* D3D resolves a paletted texture at draw time, with the palette then current: a GL copy
+         * expanded under another palette, or one SetPaletteEntries has changed since, is redone. */
+        uint32_t ver = dev->pal_version[dev->cur_palette];
+        if (t->pal_idx != dev->cur_palette || t->pal_ver != ver) {
+            t->pal_idx = dev->cur_palette;
+            t->pal_ver = ver;
+            t->dirty = 1;
+            for (int face = 0; face < (t->kind == RES_CUBE ? 6 : 1); face++)
+                for (uint32_t l = 0; l < t->levels; l++) res_of(t->surf[face][l])->dirty = 1;
+        }
+    }
     if (!t->dirty) return;
     t->dirty = 0;
     for (int face = 0; face < (t->kind == RES_CUBE ? 6 : 1); face++)
