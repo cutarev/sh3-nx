@@ -3,3 +3,5 @@
 # split a function the sweep decoded through a data table.
 0x00665097
 0x004E9400
+0x0053F090
+0x00567760
