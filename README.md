@@ -38,6 +38,8 @@ is reimplemented on top of SDL2 and OpenGL.
 
 - Better crash logs: `sh3-crash.log` lists the last calls of the thread that crashed (they were mixed from every
   thread), and with `log=1` in `sh3.ini`, `sh3.log` names any file the game fails to open.
+- Fixed a crash entering the area past the Hazel Street station stairs (a monster callback that was never
+  recompiled; another one like it fixed too).
 
 ## v0.02
 
