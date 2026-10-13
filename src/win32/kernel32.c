@@ -640,6 +640,7 @@ static uint32_t open_file(const char *guest, uint32_t access, uint32_t dispositi
     FILE *f = fopen(path, mode);
     if (rt_trace) rt_log("  open %s -> %s %s", guest, path, f ? "ok" : "FAILED");
     if (has_save(guest)) rt_log("save: open %s access %08X disposition %u -> %s", guest, access, disposition, f ? "ok" : "FAILED");
+    if (!f && !write) rt_log("open: %s not found (%s)", guest, path);  /* the game's missing files */
     if (!f) { last_error = ERROR_FILE_NOT_FOUND; return INVALID_HANDLE; }
     uint32_t h = new_handle(H_FILE);
     obj(h)->f = f;

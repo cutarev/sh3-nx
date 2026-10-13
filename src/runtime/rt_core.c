@@ -25,9 +25,9 @@ RECOMP_TLS int g_fp_top, g_fp_cmp, g_df;
 RECOMP_TLS uint16_t g_fp_control_word = 0x027F, g_fp_cc;
 RECOMP_TLS RecompXmm g_xmm0, g_xmm1, g_xmm2, g_xmm3, g_xmm4, g_xmm5, g_xmm6, g_xmm7;
 RECOMP_TLS RecompMmx g_mm0, g_mm1, g_mm2, g_mm3, g_mm4, g_mm5, g_mm6, g_mm7;
-volatile uint32_t g_icall_trace[ICALL_TRACE_SIZE];
-volatile uint32_t g_icall_trace_idx;
-volatile uint64_t g_icall_count;
+RECOMP_TLS volatile uint32_t g_icall_trace[ICALL_TRACE_SIZE];  /* per thread: see recomp_types.h */
+RECOMP_TLS volatile uint32_t g_icall_trace_idx;
+RECOMP_TLS volatile uint64_t g_icall_count;
 
 int rt_trace;
 char rt_game_dir[512] = ".";

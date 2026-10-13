@@ -337,14 +337,18 @@ static inline int64_t recomp_fist(double value, uint16_t control, unsigned bits)
 /** Size of the ring buffer (must be power of 2). */
 #define ICALL_TRACE_SIZE 16
 
-/** Ring buffer of recent indirect call target VAs. */
-extern volatile uint32_t g_icall_trace[ICALL_TRACE_SIZE];
+/** Ring buffer of recent indirect call target VAs.
+ *
+ * Per thread (sh2-nx, sh3-nx): every indirect call writes these, and with the guest's threads on three cores
+ * a shared ring bounced its cache line between them on each call. A crash dump reads the trace of
+ * the thread that crashed, which is the one that matters. */
+extern RECOMP_TLS volatile uint32_t g_icall_trace[ICALL_TRACE_SIZE];
 
 /** Current write index into the ring buffer. */
-extern volatile uint32_t g_icall_trace_idx;
+extern RECOMP_TLS volatile uint32_t g_icall_trace_idx;
 
-/** Total count of indirect calls executed. */
-extern volatile uint64_t g_icall_count;
+/** Count of indirect calls executed by this thread. */
+extern RECOMP_TLS volatile uint64_t g_icall_count;
 
 /**
  * Called when an indirect call target cannot be resolved.
