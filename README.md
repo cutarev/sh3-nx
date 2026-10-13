@@ -10,7 +10,7 @@
 
 <p align=center><a href="https://discord.gg/H9yb3hSkvf"><img src="https://img.shields.io/badge/Discord-Join%20the%20server-5865F2?logo=discord&logoColor=white" alt="Discord"></a></p>
 
-<p align=center><b>v0.02</b></p>
+<p align=center><b>v0.03</b></p>
 
 A native Nintendo Switch port of the PC version of **Silent Hill 3**, made the same way as
 [sh2-nx](https://github.com/cutarev/sh2-nx).
@@ -34,6 +34,11 @@ is reimplemented on top of SDL2 and OpenGL.
 - **Shader cache**: shaders are compiled once and kept on the SD card, so areas only stutter the first time.
 - Also builds for Linux (x86-64), which is where most of the debugging happens.
 
+## v0.03
+
+- Better crash logs: `sh3-crash.log` lists the last calls of the thread that crashed (they were mixed from every
+  thread), and with `log=1` in `sh3.ini`, `sh3.log` names any file the game fails to open.
+
 ## v0.02
 
 - Heather's hair in the real-time cutscenes was drawn as solid blocks
@@ -49,6 +54,7 @@ inventory, options and Button Config.
 Known issues:
 
 - The FMVs (`data/movie/*.000`, played through DirectShow on PC) are skipped.
+- After the cutscene in the Office Building bathroom the screen can stay black: press a button to continue.
 - The Konami and KCET logos and the credits are stretched on a wide screen.
 - Little tested past the first areas: if it crashes, `sh3-crash.log` next to the NRO says where (please attach it
   to an issue).
