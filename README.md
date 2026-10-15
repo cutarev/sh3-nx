@@ -98,14 +98,14 @@ Saves, settings and the shader cache are written next to the NRO.
 | Switch | Xbox (PC) | Action |
 | --- | --- | --- |
 | A | A | Action, confirm |
-| B | B | Dash, cancel |
-| Y | X | Map |
-| X | Y | Flashlight |
-| L | LB | Search view |
-| R | RB | Ready weapon |
-| ZL / ZR | LT / RT | Strafe left / right |
-| − | Back | Inventory, skip |
-| + | Start | Pause |
+| B | B | Flashlight, cancel |
+| Y | X | Dash |
+| X | Y | Map |
+| L / R | LB / RB | Strafe left / right |
+| ZL | LT | Ready weapon |
+| ZR | RT | Search view |
+| + | Start | Inventory |
+| − | Back | Pause, skip |
 | Left stick, d-pad | Left stick, d-pad | Move |
 | Right stick | Right stick | Camera |
 | L stick click | LS | Supplies |
@@ -113,7 +113,8 @@ Saves, settings and the shader cache are written next to the NRO.
 
 </div>
 
-These are the game's own defaults; change them in Options > Button Config. With a keyboard on PC: W A S D and Q E
+Laid out as in sh2-nx; change them in Options > Button Config. A `savedata/key.ini` saved by an older version keeps
+its old layout: delete it to get this one. With a keyboard on PC: W A S D and Q E
 to move and turn, Space for action, Return / Escape to confirm / cancel.
 
 ## Settings

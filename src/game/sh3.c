@@ -74,10 +74,21 @@ void sub_00401ED8(void) {
     g_esp += 4;
 }
 
+/* The pad's default bindings, (button << 8 | action) shorts at 0x7214E4 that the game copies when there is no
+ * savedata/key.ini: laid out as in sh2-nx. Buttons are 0x0C + dinput.c's numbering (X A B Y LB RB LT RT Back
+ * Start LS RS); actions 0 search view, 1 ready weapon, 2/3 strafe left/right, 4 map, 5 action, 6 dash, 7 light,
+ * 8 pause, 9 zoom, 0x0A supplies, 0x0B inventory. The other 13 entries (stick, camera, menus) stay. */
+static const uint16_t pad_defaults[12] = {
+    0x0C06, 0x0D05, 0x0E07, 0x0F04,  /* Switch Y dash, A action, B light (and cancel), X map */
+    0x1002, 0x1103, 0x1201, 0x1300,  /* L / R strafe, ZL ready weapon, ZR search view */
+    0x150B, 0x1408, 0x160A, 0x1709,  /* + inventory, − pause (and skip), stick clicks supplies / zoom */
+};
+
 /* Called once after sh3.exe is loaded: the variables tools/patch_exe.py points code at. */
 void game_init(void) {
     host_arena_commit(0x0EC00000u, 0x1000);
     MEMF(0x0EC00000u) = ws_aspect() > 1.5 ? 0.0f : 0.5f;  /* cutscene borders: none on a wide screen */
+    memcpy(GPTR(0x7214E4), pad_defaults, sizeof pad_defaults);
 }
 
 /* Indirect calls and the dispatch table reach the generated bodies (sub_X_gen) of wrapped functions: calls
