@@ -41,4 +41,25 @@ for i, a in enumerate(starts):
             end = max(int(f['end'], 16), int(by[s]['end'], 16))
             f['end'], f['size'] = f'0x{end:08X}', end - a
             print(f'0x{s:08X} starts inside an instruction of 0x{a:08X}: merged, now ends at 0x{end:08X}')
+# A gap_prologue is only a guess at code nobody claimed; when the function before it jumps into it, it is that
+# function's tail. 0x5BEBB0 (a callback in the table at 0x6D7A68) stopped at its first ret and its jcc's into
+# 0x5BEBD8 fell to stubs: SH3 crashed breaking the wall with the silencer in the construction site.
+def jumps_into(f, lo, hi):
+    a = int(f['start'], 16)
+    return any(ins.mnemonic.startswith('j') and ins.op_str.startswith('0x') and lo <= int(ins.op_str, 16) < hi
+               for ins in md.disasm(d[a - B:int(f['end'], 16) - B], a))
+
+
+for n in starts:  # in address order: a merged tail can be jumped into the next gap
+    nf = by[n]
+    if n in drop or nf['detection_method'] != 'gap_prologue':
+        continue
+    end = int(nf['end'], 16)
+    # every function ending there: an alias overlaps its parent and both jump in (0x583500 in 0x583410)
+    enders = [f for a, f in by.items() if a < n and a not in drop and int(f['end'], 16) == n and jumps_into(f, n, end)]
+    for f in enders:
+        f['end'], f['size'] = f'0x{end:08X}', end - int(f['start'], 16)
+        print(f'0x{n:08X} (gap_prologue) is jumped into by {f["start"]}: merged, now ends at 0x{end:08X}')
+    if enders:
+        drop.add(n)
 json.dump([f for f in fs if int(f['start'], 16) not in drop], open(sys.argv[2], 'w'), indent=1)
