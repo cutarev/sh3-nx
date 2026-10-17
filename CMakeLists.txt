@@ -18,7 +18,7 @@ if(NINTENDO_SWITCH)
   # Built with the devkitPro toolchain (tools/build-switch.sh); OpenGL comes through EGL and mesa.
   target_include_directories(sh3 PRIVATE ${DEVKITPRO}/portlibs/switch/include)
   target_link_libraries(sh3 PRIVATE SDL2 EGL glapi drm_nouveau stdc++ pthread m)
-  nx_generate_nacp(sh3.nacp NAME "Silent Hill 3" AUTHOR "sh3-nx" VERSION "0.03")
+  nx_generate_nacp(sh3.nacp NAME "Silent Hill 3" AUTHOR "sh3-nx" VERSION "0.04")
   nx_create_nro(sh3 OUTPUT sh3-nx.nro NACP sh3.nacp NOICON)
 else()
   # GL is loaded at run time through SDL (src/d3d8/gl.c), so nothing links libGL.
