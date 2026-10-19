@@ -36,7 +36,7 @@ is reimplemented on top of SDL2 and OpenGL.
 
 ## v0.04
 
-- Controls laid out as in sh2-nx: L / R strafe, ZL readies the weapon, ZR is the search view (see
+- Controls laid out as in sh2-nx: L / R strafe, ZL is the search view, ZR readies the weapon (see
   [Controls](#controls)).
 - Fixed a crash breaking the white rubble wall with the silencer in the construction site (a callback that was
   only partly recompiled; nine others like it fixed too).
@@ -109,8 +109,8 @@ Saves, settings and the shader cache are written next to the NRO.
 | Y | X | Dash |
 | X | Y | Map |
 | L / R | LB / RB | Strafe left / right |
-| ZL | LT | Ready weapon |
-| ZR | RT | Search view |
+| ZL | LT | Search view |
+| ZR | RT | Ready weapon |
 | + | Start | Inventory |
 | − | Back | Pause, skip |
 | Left stick, d-pad | Left stick, d-pad | Move |
