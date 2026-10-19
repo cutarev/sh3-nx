@@ -80,7 +80,7 @@ void sub_00401ED8(void) {
  * 8 pause, 9 zoom, 0x0A supplies, 0x0B inventory. The other 13 entries (stick, camera, menus) stay. */
 static const uint16_t pad_defaults[12] = {
     0x0C06, 0x0D05, 0x0E07, 0x0F04,  /* Switch Y dash, A action, B light (and cancel), X map */
-    0x1002, 0x1103, 0x1201, 0x1300,  /* L / R strafe, ZL ready weapon, ZR search view */
+    0x1002, 0x1103, 0x1200, 0x1301,  /* L / R strafe, ZL search view, ZR ready weapon */
     0x150B, 0x1408, 0x160A, 0x1709,  /* + inventory, − pause (and skip), stick clicks supplies / zoom */
 };
 
