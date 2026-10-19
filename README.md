@@ -10,7 +10,7 @@
 
 <p align=center><a href="https://discord.gg/H9yb3hSkvf"><img src="https://img.shields.io/badge/Discord-Join%20the%20server-5865F2?logo=discord&logoColor=white" alt="Discord"></a></p>
 
-<p align=center><b>v0.04</b></p>
+<p align=center><b>v0.05</b></p>
 
 A native Nintendo Switch port of the PC version of **Silent Hill 3**, made the same way as
 [sh2-nx](https://github.com/cutarev/sh2-nx).
@@ -33,6 +33,10 @@ is reimplemented on top of SDL2 and OpenGL.
 - **Controller**: Nintendo's layout (A confirms, B cancels), remappable in Options > Button Config.
 - **Shader cache**: shaders are compiled once and kept on the SD card, so areas only stutter the first time.
 - Also builds for Linux (x86-64), which is where most of the debugging happens.
+
+## v0.05
+
+- ZL and ZR swapped to match sh2-nx: ZL is the search view, ZR readies the weapon (see [Controls](#controls)).
 
 ## v0.04
 
