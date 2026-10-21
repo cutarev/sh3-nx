@@ -30,6 +30,8 @@ PATCHES = [
     (0x5DAFEB, p32(-0x100), p32(-0x400), 'inventory background width'),
     (CAVE_HEALTH, b'\x90', b'\xC3', 'cave: health indicator position'),
     (0x5F1D15, bytes.fromhex('d959e8d9c0'), call(0x5F1D15, CAVE_HEALTH), 'health indicator position'),
+    (0x5E82FD, b'\x6a\x00', b'\x6a\x01', 'pause menu box: alpha blending on'),
+    (0x5E8390, p32(0xFF000000), p32(0x00000000), 'pause menu box: fully transparent'),
 ]
 
 

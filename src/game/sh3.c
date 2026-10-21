@@ -84,6 +84,21 @@ static const uint16_t pad_defaults[12] = {
     0x150B, 0x1408, 0x160A, 0x1709,  /* + inventory, − pause (and skip), stick clicks supplies / zoom */
 };
 
+/* int can_do(what) (0x495B60): the pause menu (calls returning to 0x5E88E2 / 0x5E88F7) asks it whether Save (0x0D)
+ * and Load (0x0E) are allowed, and it refuses while the screen fade (type 0x897E38, done flag 0x897E3C) runs. The
+ * pause freezes the fade, so pausing during a fade-in (types 5, 9, 13: back from the save screen, a load or a door)
+ * left Save / Load greyed out until the menu was closed and opened again. For the pause menu a fade-in counts as
+ * done; fade-outs still refuse. */
+extern void sub_00495B60_gen(void);
+void sub_00495B60(void) {
+    uint32_t from = MEM32(g_esp);
+    uint8_t type = MEM8(0x897E38), done = MEM8(0x897E3C);
+    int fade_in = type == 5 || type == 9 || type == 13;
+    if (fade_in && (from == 0x5E88E2u || from == 0x5E88F7u)) MEM8(0x897E3C) = 1;
+    sub_00495B60_gen();
+    MEM8(0x897E3C) = done;
+}
+
 /* Called once after sh3.exe is loaded: the variables tools/patch_exe.py points code at. */
 void game_init(void) {
     host_arena_commit(0x0EC00000u, 0x1000);
@@ -105,6 +120,7 @@ recomp_func_t recomp_lookup_manual(uint32_t va) {
     case 0x0043ABC0u: return sub_0043ABC0;
     case 0x00682BA0u: return sub_00682BA0;
     case 0x00401ED8u: return sub_00401ED8;
+    case 0x00495B60u: return sub_00495B60;
     }
     return NULL;
 }
