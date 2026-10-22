@@ -64,10 +64,10 @@ def _merge_zero_flag(states):
     inherited as itself -- yet both leave ZF as (eax == 0), which is the whole
     of what a je or jne there is asking.
 
-    Unlike the CMP/TEST merge above, these reconstruct their operands rather
-    than reading a snapshot, so the merge only survives when every predecessor
-    names the same destination register. The name carries the width, so
-    `dec al` and `sub eax, ecx` do not merge.
+    Each setter publishes its result in _zr, so the consumer can read the
+    saved zero flag even if the destination is overwritten after the join.
+    This merge requires the same destination register and width; `dec al`
+    and `sub eax, ecx` do not merge here.
 
     The marker is deliberately narrow: only ZF is answerable from it, and
     _make_condition refuses everything else.
