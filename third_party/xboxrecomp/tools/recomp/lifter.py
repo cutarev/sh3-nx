@@ -553,11 +553,12 @@ def _make_condition(jcc, flag_setter, flag_ops):
         return None
 
     if flag_setter == "__zf_from_dest" and flag_ops:
-        dest = _fmt_operand_read(flag_ops[0])
+        # Each predecessor saved its result in _zr. The destination may have
+        # been overwritten by a flag-preserving instruction after the join.
         if jcc in ("je", "jz"):
-            return f"({dest} == 0)", desc
+            return "(_zr == 0)", desc
         if jcc in ("jne", "jnz"):
-            return f"({dest} != 0)", desc
+            return "(_zr != 0)", desc
         return None
 
     # A cmp/test that is not fused with its jcc snapshots its operands into
