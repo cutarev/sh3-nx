@@ -456,6 +456,7 @@ static uint32_t load_exe(const char *path) {
 
 extern void xbe_entry_point(void);
 void game_init(void);  /* src/game/sh3.c */
+void launcher_run(void);  /* src/d3d8/launcher.c */
 
 /* sh3.ini in the game folder: resolution=WxH (default 1280x720), cores=1 to keep the guest threads on one
  * core, trace=1 to log every bridged call, log=1 to write sh3.log on the Switch. */
@@ -477,11 +478,20 @@ static void read_ini(void) {
     host_use_single_core(cores >= 3 ? -1 : 0);
 }
 
+/* Once the launcher is done (src/d3d8/launcher.c): its settings, the exe and the game's own setup. */
+void rt_game_setup(void) {
+    read_ini();
+    load_exe("sh3.exe");
+    game_init();
+    if (cover_from >= 0) cover = calloc((g_xbox_code_hi - g_xbox_code_lo) / 8 + 1, 1);
+}
+
 /* The game runs on a thread of its own: lifted code recurses as deep as the guest and the main
  * thread's stack is not ours to size on every platform. */
 static void game_thread(void *unused) {
     (void)unused;
     rt_thread_init_main(1u << 20);
+    launcher_run();
     xbe_entry_point();
     rt_log("entry point returned");
     exit(0);
@@ -502,16 +512,12 @@ int main(int argc, char **argv) {
     if (dir) snprintf(rt_game_dir, sizeof rt_game_dir, "%s", dir);
     if (chdir(rt_game_dir)) rt_fatal("cannot enter %s", rt_game_dir);
     rt_trace = getenv("SH3_TRACE") != NULL;
-    read_ini();
     if (getenv("SH3_COVER")) cover_from = abs(atoi(getenv("SH3_COVER"))), cover_all = atoi(getenv("SH3_COVER")) < 0;
     if (getenv("SH3_ORACLE")) sscanf(getenv("SH3_ORACLE"), "%x,%u", &oracle_va, &oracle_nth);
 
     host_crash_handlers(on_crash);
     arena_init();
     recomp_dispatch_init();
-    load_exe("sh3.exe");
-    game_init();
-    if (cover_from >= 0) cover = calloc((g_xbox_code_hi - g_xbox_code_lo) / 8 + 1, 1);
     host_thread_start(game_thread, NULL, 16u << 20);
     for (;;) sleep(1000);
 }

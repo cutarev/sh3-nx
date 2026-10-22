@@ -17,6 +17,9 @@ enum {
 #define D3DERR_NOTAVAILABLE 0x8876086Au
 #define E_NOINTERFACE 0x80004002u
 
+void gl_context_open(void);
+void launcher_run(void);  /* launcher.c */
+
 enum { RES_TEXTURE = 1, RES_CUBE, RES_SURFACE, RES_VB, RES_IB };
 
 typedef struct Res {

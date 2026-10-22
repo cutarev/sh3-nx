@@ -127,24 +127,30 @@ METHOD(d3d_GetAdapterMonitor, 2) { return 1; }
 static uint32_t device_vtable(void);
 static void device_reset(uint32_t pp);
 
+/* The GL context, made by the launcher or the first CreateDevice. */
+void gl_context_open(void) {
+    static SDL_GLContext ctx;
+    if (ctx) return;
+    /* 4.5 core has glClipControl; older contexts are tried so the log says what the driver offers. */
+    static const int versions[][2] = {{4, 6}, {4, 5}, {4, 3}};
+    for (int i = 0; i < 3 && !ctx; i++) {
+        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, versions[i][0]);
+        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, versions[i][1]);
+        SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+        ctx = SDL_GL_CreateContext(rt_window);
+        if (!ctx) rt_log("GL %d.%d core: %s", versions[i][0], versions[i][1], SDL_GetError());
+    }
+    if (!ctx) rt_fatal("no OpenGL 4.3+ core context: %s", SDL_GetError());
+    SDL_GL_SetSwapInterval(1);
+    gl_load();
+}
+
 METHOD(d3d_CreateDevice, 7) {
     uint32_t pp = ARG(5);
     rt_log("CreateDevice %ux%u fmt %u windowed %u depth %u/%u flags %08X", MEM32(pp), MEM32(pp + 4),
            MEM32(pp + 8), MEM32(pp + 28), MEM32(pp + 32), MEM32(pp + 36), ARG(4));
     if (!dev) {
-        /* 4.5 core has glClipControl; older contexts are tried so the log says what the driver offers. */
-        static const int versions[][2] = {{4, 6}, {4, 5}, {4, 3}};
-        SDL_GLContext ctx = NULL;
-        for (int i = 0; i < 3 && !ctx; i++) {
-            SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, versions[i][0]);
-            SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, versions[i][1]);
-            SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
-            ctx = SDL_GL_CreateContext(rt_window);
-            if (!ctx) rt_log("GL %d.%d core: %s", versions[i][0], versions[i][1], SDL_GetError());
-        }
-        if (!ctx) rt_fatal("no OpenGL 4.3+ core context: %s", SDL_GetError());
-        SDL_GL_SetSwapInterval(1);
-        gl_load();
+        gl_context_open();
         rt_log("GL: %s / %s", glGetString(GL_RENDERER), glGetString(GL_VERSION));
         GLint n_ext = 0, clip_control = 0;
         glGetIntegerv(GL_NUM_EXTENSIONS, &n_ext);

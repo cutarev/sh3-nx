@@ -77,8 +77,8 @@ WINAPI(RegisterClassExA, "RegisterClassExA", 1) {
     wndproc = MEM32(ARG(0) + 8);  /* WNDCLASSEXA.lpfnWndProc */
     return 0xC001;
 }
-WINAPI(CreateWindowExA, "CreateWindowExA", 12) {
-    if (rt_trace) rt_log("  CreateWindowExA(%s, %dx%d)", ARG(2) ? GSTR(ARG(2)) : "", ARG(6), ARG(7));
+/* The game's window, opened by the launcher (src/d3d8/launcher.c) or the game's CreateWindowExA. */
+void rt_window_open(void) {
     if (!rt_window) {
         SDL_SetHint(SDL_HINT_NO_SIGNAL_HANDLERS, "1");  /* let SIGTERM/SIGINT stop the port */
         if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_GAMECONTROLLER | SDL_INIT_TIMER))
@@ -90,6 +90,10 @@ WINAPI(CreateWindowExA, "CreateWindowExA", 12) {
                                          (getenv("SH3_KEYS") && !getenv("SH3_SHOW") ? SDL_WINDOW_HIDDEN : 0));
         if (!rt_window) rt_fatal("SDL_CreateWindow: %s", SDL_GetError());
     }
+}
+WINAPI(CreateWindowExA, "CreateWindowExA", 12) {
+    if (rt_trace) rt_log("  CreateWindowExA(%s, %dx%d)", ARG(2) ? GSTR(ARG(2)) : "", ARG(6), ARG(7));
+    rt_window_open();
     return HWND_MAIN;
 }
 WINAPI(ShowWindow, "ShowWindow", 2) { return 1; }
