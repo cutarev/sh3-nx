@@ -27,6 +27,8 @@ is reimplemented on top of SDL2 and OpenGL.
 ## Features
 
 - **Native code**: every function of `sh3.exe` runs as ARM64 code; no emulator, no Wine.
+- **Launcher**: Play and Options before the game; Options changes the resolution and the game threads in `sh3.ini`
+  on the console.
 - **Widescreen**: 16:9 at 1280x720 by default, 1920x1080 for docked play, or the original 4:3
   (ThirteenAG's WidescreenFix, ported). The camera widens in gameplay, cutscenes keep their framing without the
   letterbox, and menus and HUD stay in a centered 4:3 area.
@@ -36,6 +38,12 @@ is reimplemented on top of SDL2 and OpenGL.
 
 ## v0.06
 
+- **Launcher**: after a warning screen, Play and Options come before the game, with the game's own menu sounds.
+  Options sets the resolution (720p, 1080p or the original 4:3) and the game threads, and writes them to `sh3.ini`
+  (see [Settings](#settings)).
+- Pause menu: the black box behind it is gone, so the game stays visible behind the menu text.
+- Pause menu: Save and Load were greyed out when the game was paused during a fade-in (back from the save screen,
+  after a load or a door) until the menu was reopened.
 - Fixed large triangles drawn over the car windows in the cutscene after the Missionary fight
   ([#6](https://github.com/cutarev/sh3-nx/pull/6), by [Ligux01](https://github.com/Ligux01)): where two paths
   joined, the recompiler read the zero flag back from a register that had been overwritten since, so some
@@ -137,7 +145,7 @@ to move and turn, Space for action, Return / Escape to confirm / cancel.
 
 ## Settings
 
-`sh3.ini`, next to the NRO (every line is optional):
+`sh3.ini`, next to the NRO (every line is optional); the launcher's Options screen sets `resolution` and `cores`:
 
 | Setting | Effect |
 | --- | --- |
